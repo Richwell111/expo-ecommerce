@@ -1,9 +1,22 @@
-import React from 'react'
 
-export default function App() {
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+} from "@clerk/clerk-react";
+
+function App() {
   return (
-    <div className='bg-gray-600'>
-      App
-    </div>
-  )
+    <header>
+      <SignedOut>
+        <SignInButton />
+      </SignedOut>
+      <SignedIn>
+        <UserButton />
+      </SignedIn>
+    </header>
+  );
 }
+
+export default App;
