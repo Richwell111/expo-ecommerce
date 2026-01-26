@@ -10,7 +10,7 @@ app.use(clerkMiddleware()); // adds auth object under the req => req.auth
 // app.use(cors({ origin: ENV.CLIENT_URL, credentials: true })); // credentials: true allows the browser to send the cookies to the server with the request
 
 const __dirname = path.resolve();
-const PORT = process.env.PORT || 3000;
+const PORT = ENV.PORT || 3000;
 
 
 app.get("/api/health", (req, res) => {
@@ -28,7 +28,7 @@ if (ENV.NODE_ENV === "production") {
 
 const startServer = async () => {
   await connectDB();
-  app.listen(ENV.PORT, () => {
+  app.listen(PORT, () => {
     console.log("Server is up and running");
   });
 };
