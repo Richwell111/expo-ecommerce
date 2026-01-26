@@ -11,7 +11,7 @@ app.use(clerkMiddleware()); // adds auth object under the req => req.auth
 
 const __dirname = path.resolve();
 const PORT = process.env.PORT || 3000;
-app.use(express.json());
+
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({ message: "Success" });
