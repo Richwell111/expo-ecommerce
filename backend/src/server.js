@@ -17,10 +17,10 @@ import productRoutes from "./routes/product.route.js";
 import cartRoutes from "./routes/cart.route.js";
 import paymentRoutes from "./routes/payment.route.js";
 
-const app = express();
 
-const __dirname = path.resolve();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // special handling: Stripe webhook needs raw body BEFORE any body parsing middleware
 // apply raw body parser conditionally only to webhook endpoint
 app.use(
