@@ -5,13 +5,18 @@ import { User } from "../models/user.model.js";
 
 export async function createProduct(req, res) {
   try {
+    console.log("Create Product Request Body:", req.body);
+    console.log("Create Product Request Files:", req.files);
+
     const { name, description, price, stock, category } = req.body;
 
     if (!name || !description || !price || !stock || !category) {
+      console.log("Missing fields");
       return res.status(400).json({ message: "All fields are required" });
     }
 
     if (!req.files || req.files.length === 0) {
+      console.log("No images provided");
       return res
         .status(400)
         .json({ message: "At least one image is required" });
@@ -43,7 +48,7 @@ export async function createProduct(req, res) {
     res.status(201).json(product);
   } catch (error) {
     console.error("Error creating product", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 }
 
@@ -51,7 +56,7 @@ export async function getAllProducts(_, res) {
   try {
     // -1 means in desc order: most recent products first
     const products = await Product.find().sort({ createdAt: -1 });
-    res.status(200).json(products);
+    res.status(200).json({ products });
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).json({ message: "Internal server error" });

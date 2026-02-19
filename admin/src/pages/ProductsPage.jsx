@@ -9,6 +9,7 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { productApi } from "../lib/api";
 import { getStockStatusBadge } from "../lib/utils";
+import Toast from "../components/Toast";
 
 function ProductsPage() {
   const [showModal, setShowModal] = useState(false);
@@ -23,15 +24,31 @@ function ProductsPage() {
   const [images, setImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
 
+  // Toast state
+  const [toast, setToast] = useState({ show: false, message: "", type: "info" });
+
+  const showToast = (message, type = "info") => {
+    setToast({ show: true, message, type });
+  };
+
+  const hideToast = () => {
+    setToast((prev) => ({ ...prev, show: false }));
+  };
+
   const queryClient = useQueryClient();
 
   // 1. Fetch data - handle nested object structure
   const { data, isLoading } = useQuery({
     queryKey: ["products"],
-    queryFn: productApi.getAll,
+    queryFn: async () => {
+      const response = await productApi.getAll();
+      console.log("API Response:", response);
+      return response;
+    },
   });
 
   const productList = data?.products || [];
+  console.log("Derived Product List:", productList);
 
   // 2. Mutations
   const createProductMutation = useMutation({
@@ -39,6 +56,11 @@ function ProductsPage() {
     onSuccess: () => {
       closeModal();
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      showToast("Product added successfully!", "success");
+    },
+    onError: (error) => {
+      console.error("Failed to add product:", error);
+      showToast(error.response?.data?.message || "Failed to add product", "error");
     },
   });
 
@@ -47,6 +69,11 @@ function ProductsPage() {
     onSuccess: () => {
       closeModal();
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      showToast("Product updated successfully!", "success");
+    },
+    onError: (error) => {
+      console.error("Failed to update product:", error);
+      showToast(error.response?.data?.message || "Failed to update product", "error");
     },
   });
 
@@ -54,6 +81,11 @@ function ProductsPage() {
     mutationFn: productApi.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      showToast("Product deleted successfully!", "success");
+    },
+    onError: (error) => {
+      console.error("Failed to delete product:", error);
+      showToast("Failed to delete product", "error");
     },
   });
 
@@ -91,7 +123,10 @@ function ProductsPage() {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    if (files.length > 3) return alert("Maximum 3 images allowed");
+    if (files.length > 3) {
+        showToast("Maximum 3 images allowed", "error");
+        return;
+    }
 
     // revoke previous blob URLs
     imagePreviews.forEach((url) => {
@@ -106,7 +141,8 @@ function ProductsPage() {
     e.preventDefault();
 
     if (!editingProduct && images.length === 0) {
-      return alert("Please upload at least one image");
+      showToast("Please upload at least one image", "error");
+      return;
     }
 
     const formDataToSend = new FormData();
@@ -132,6 +168,14 @@ function ProductsPage() {
 
   return (
     <div className="space-y-6">
+      {toast.show && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={hideToast}
+        />
+      )}
+
       {/* HEADER */}
       <div className="flex items-center justify-between">
         <div>
