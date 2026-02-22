@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/Richwell111/expo-ecommerce/issues"
   },
-  "homepage": "https://github.com/Richwell111/expo-ecommerce#readme"
+  "homepage": "https://github.com/Richwell111/expo-ecommerce#readme",
+  "dependencies": {
+    "@sentry/react-native": "^8.1.0"
+  }
 }
